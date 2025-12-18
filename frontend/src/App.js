@@ -3,8 +3,6 @@ import axios from 'axios';
 import './App.css'; // Estilização opcional
 
 function App() {
-  const API_URL = 'http://localhost:3001/api/consulta-cep/';
-
   const [cep, setCep] = useState('');
   const [endereco, setEndereco] = useState(null);
   const [erro, setErro] = useState('');
@@ -17,9 +15,14 @@ function App() {
     setLoading(true);
 
     try {
-      // Chama a nossa API Backend local
-      const response = await axios.get(`${API_URL}${cep}`);
+      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+      
+      if (response.data.erro) {
+        return response.status(404).json({ error: 'CEP não encontrado.' });
+      }
+
       setEndereco(response.data);
+
     } catch (error) {
       if (error.response && error.response.data.error) {
         setErro(error.response.data.error);
@@ -33,7 +36,7 @@ function App() {
 
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '500px', margin: '0 auto' }}>
-      <h2>Consulta Endereço e IBGE</h2>
+      <h2>Consulta CEP na API do IBGE</h2>
       
       <form onSubmit={handleBuscarCep} style={{ marginBottom: '20px' }}>
         <input
@@ -57,11 +60,11 @@ function App() {
 
       {endereco && (
         <div style={{ border: '1px solid #ccc', padding: '15px', borderRadius: '5px', backgroundColor: '#f9f9f9' }}>
-          <h3>Dados Encontrados:</h3>
+          <h3>Resultado:</h3>
           <p><strong>Logradouro:</strong> {endereco.logradouro}</p>
           <p><strong>Bairro:</strong> {endereco.bairro}</p>
-          <p><strong>Cidade/UF:</strong> {endereco.cidade} / {endereco.estado}</p>
-          <p><strong>Código IBGE:</strong> {endereco.codigo_ibge}</p>
+          <p><strong>Cidade/UF:</strong> {endereco.localidade} / {endereco.estado}</p>
+          <p><strong>Código IBGE:</strong> {endereco.ibge}</p>
           <p><strong>DDD:</strong> {endereco.ddd}</p>
         </div>
       )}
