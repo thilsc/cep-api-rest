@@ -6,7 +6,7 @@
     if (!error && !address) return null;
   
     return (
-      <div class="ResponsePanel">
+      <div className="ResponsePanel">
         {/* O Painel decide qual filho renderizar */}
         {error ? (
           <ErrorMessage message={error} />
